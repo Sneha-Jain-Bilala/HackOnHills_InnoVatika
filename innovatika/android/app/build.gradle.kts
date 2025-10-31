@@ -24,7 +24,7 @@ android {
         applicationId = "com.example.innovatika"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -37,6 +37,16 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+dependencies {
+
+    implementation("com.google.ar.sceneform.ux:sceneform-ux:1.8.0")
+
+    implementation("com.google.ar:core:1.33.0")
+
+
+    // Alternatively, use ArSceneView without the UX dependency.
+    implementation("com.google.ar.sceneform:core:1.8.0")
 }
 
 flutter {

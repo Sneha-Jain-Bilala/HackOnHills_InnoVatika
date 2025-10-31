@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:innovatika/pages/augmented.dart';
 import 'package:innovatika/pages/homepage.dart';
 
 void main() {
@@ -31,8 +32,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:Home() ,
+      home: ArImageDisplayScreen(),
     );
   }
 }
-
