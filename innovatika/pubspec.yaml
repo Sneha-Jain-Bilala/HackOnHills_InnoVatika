@@ -34,7 +34,10 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-
+  arcore_flutter_plugin:
+    git:
+      url: https://github.com/sanjujr/arcore_flutter_plugin
+  vector_math: ^2.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
