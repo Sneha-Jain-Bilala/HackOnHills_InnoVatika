@@ -1,44 +1,21 @@
-import 'dart:typed_data'; // Import Uint8List
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:vector_math/vector_math_64.dart' as vector;
 
-class ArImageDisplayScreen extends StatefulWidget {
+class HelloWorld extends StatefulWidget {
   @override
-  _ArImageDisplayScreenState createState() => _ArImageDisplayScreenState();
+  _HelloWorldState createState() => _HelloWorldState();
 }
 
-class _ArImageDisplayScreenState extends State<ArImageDisplayScreen> {
+class _HelloWorldState extends State<HelloWorld> {
   late ArCoreController arCoreController;
-  Uint8List? imageBytes; // Store the loaded image bytes
-
-  @override
-  void initState() {
-    super.initState();
-    _loadAsset();
-  }
-
-  Future<void> _loadAsset() async {
-    try {
-      final ByteData data = await rootBundle.load(
-        'assets/images/vegetables.png',
-      );
-      setState(() {
-        imageBytes = data.buffer.asUint8List();
-      });
-    } catch (e) {
-      print("Error loading asset: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Tap a plane to place image')),
-      body: ArCoreView(
-        onArCoreViewCreated: _onArCoreViewCreated,
-        enableTapRecognizer: true, // <-- 1. Enable tap recognition
-        // We no longer use 'onTap' here
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Hello World')),
+        body: ArCoreView(onArCoreViewCreated: _onArCoreViewCreated),
       ),
     );
   }
@@ -46,31 +23,48 @@ class _ArImageDisplayScreenState extends State<ArImageDisplayScreen> {
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
 
-    // 2. Assign the plane tap handler to the controller
-    arCoreController.onPlaneTap = _handleOnPlaneTap;
+    _addSphere(arCoreController);
+    _addCylindre(arCoreController);
+    _addCube(arCoreController);
   }
 
-  // 3. This function is now called ONLY when a plane is tapped
-  void _handleOnPlaneTap(List<ArCoreHitTestResult> hits) {
-    // Check if the tap hit a plane and if our image is loaded
-    if (hits.isNotEmpty && imageBytes != null) {
-      final hit = hits.first;
-      _addImage(arCoreController, hit);
-    }
-  }
-
-  // 4. This function is the same as before
-  void _addImage(ArCoreController controller, ArCoreHitTestResult hit) {
+  void _addSphere(ArCoreController controller) {
+    final material = ArCoreMaterial(color: Color.fromARGB(120, 66, 134, 244));
+    final sphere = ArCoreSphere(materials: [material], radius: 0.1);
     final node = ArCoreNode(
-      image: ArCoreImage(
-        bytes: imageBytes!,
-        width: 5, // 30cm
-        height: 5,
-      ),
-      position: hit.pose.translation,
-      rotation: hit.pose.rotation,
+      shape: sphere,
+      position: vector.Vector3(0, 0, -1.5),
     );
+    controller.addArCoreNode(node);
+  }
 
+  void _addCylindre(ArCoreController controller) {
+    final material = ArCoreMaterial(color: Colors.red, reflectance: 1.0);
+    final cylindre = ArCoreCylinder(
+      materials: [material],
+      radius: 0.5,
+      height: 0.3,
+    );
+    final node = ArCoreNode(
+      shape: cylindre,
+      position: vector.Vector3(0.0, -0.5, -2.0),
+    );
+    controller.addArCoreNode(node);
+  }
+
+  void _addCube(ArCoreController controller) {
+    final material = ArCoreMaterial(
+      color: Color.fromARGB(120, 66, 134, 244),
+      metallic: 1.0,
+    );
+    final cube = ArCoreCube(
+      materials: [material],
+      size: vector.Vector3(0.5, 0.5, 0.5),
+    );
+    final node = ArCoreNode(
+      shape: cube,
+      position: vector.Vector3(-0.5, 0.5, -3.5),
+    );
     controller.addArCoreNode(node);
   }
 
