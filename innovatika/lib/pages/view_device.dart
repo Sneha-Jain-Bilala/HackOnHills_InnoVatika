@@ -130,6 +130,55 @@ class _ViewDeviceState extends State<ViewDevice> {
     }
   }
 
+  // --- ADDED: New advice functions for each metric ---
+
+  String _getHealthAdvice(String message) {
+    switch (message) {
+      case "Very Wet":
+        return "Too much water! Let the soil dry out a bit.";
+      case "Dry":
+        return "Feeling thirsty! It's time to water your plant.";
+      case "Very Dry":
+        return "Parched! Please water your plant soon.";
+      case "Moderately Wet":
+      case "Moderately Moist":
+      default:
+        return "Looking good! The soil is perfectly moist.";
+    }
+  }
+
+  String _getMoistureAdvice(double percentage) {
+    if (percentage < 30) {
+      return "Soil is dry. Time to water!";
+    } else if (percentage < 70) {
+      return "Soil moisture is just right.";
+    } else {
+      return "Soil is very wet. Hold off on watering.";
+    }
+  }
+
+  String _getTemperatureAdvice(double temp) {
+    if (temp < 10) {
+      return "It's too cold! Try a warmer spot.";
+    } else if (temp < 28) {
+      return "Temperature is ideal for growth.";
+    } else {
+      return "It's getting hot! Ensure shade and water.";
+    }
+  }
+
+  String _getHumidityAdvice(double humidity) {
+    if (humidity < 30) {
+      return "Air is very dry. Misting can help.";
+    } else if (humidity < 60) {
+      return "Humidity levels are comfortable.";
+    } else {
+      return "Air is humid. Ensure good air circulation.";
+    }
+  }
+
+  // --- End of new advice functions ---
+
   @override
   Widget build(BuildContext context) {
     // Update health message
@@ -204,97 +253,75 @@ class _ViewDeviceState extends State<ViewDevice> {
                 );
               }
 
+              // CHANGED: Layout is now a single column list of cards
               return SafeArea(
                 child: ListView(
                   padding: EdgeInsets.all(12),
                   children: [
-                    // Animated Grid for sensor data
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.9, // Adjust aspect ratio
-                      children: [
-                        // Moisture Card
-                        _buildGlassCard(
-                          title: "Moisture",
-                          icon: 'assets/images/soil_m.png',
-                          child: _buildMoistureGauge(moisturePercent),
-                        ),
+                    // 1. Main Health Card
+                    _buildMainHealthCard(_message),
+                    SizedBox(height: 12),
 
-                        // Humidity Card
-                        _buildGlassCard(
-                          title: "Humidity",
-                          icon: 'assets/images/drop_r.png',
-                          child: _buildHumidityGauge(humidity),
-                        ),
+                    // 2. Moisture Card
+                    // CHANGED: Using new _buildMoistureCard
+                    _buildMoistureCard(moisturePercent),
+                    SizedBox(height: 12),
 
-                        // Temperature Card
-                        _buildGlassCard(
-                          title: "Temperature",
-                          icon: 'assets/images/temp.png',
-                          child: _buildTemperatureDisplay(temperature),
-                        ),
+                    // 3. Temperature Card (No longer in a Row)
+                    // CHANGED: Using new _buildTemperatureCard
+                    _buildTemperatureCard(temperature),
+                    SizedBox(height: 12),
 
-                        // Health Card
-                        _buildGlassCard(
-                          title: "Health",
-                          icon: 'assets/images/health.png',
-                          child: _buildHealthDisplay(_message),
-                        ),
-                      ],
-                    ),
+                    // 4. Humidity Card (No longer in a Row)
+                    // CHANGED: Using new _buildHumidityCard
+                    _buildHumidityCard(humidity),
                     SizedBox(height: 20),
 
-                    // Historical Data
+                    // 5. Historical Data (Unchanged, still uses _buildGlassCard)
                     _buildGlassCard(
                       title: "Historical Data",
-                      child: Container(
-                        height: (MediaQuery.of(context).size.height / 2.5),
-                        // CHANGED: This null check is now safe because jsonData is no longer 'late'
-                        child: jsonData == null
-                            ? Center(
-                                child: Text(
-                                  "No history",
-                                  style: TextStyle(color: _mediumBrown),
-                                ),
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: jsonData["data"].length,
-                                itemBuilder: (context, index) {
-                                  var item = jsonData["data"][index];
-                                  double histMoisture = moistureToPercentage(
-                                    int.parse(item["moisture"].toString()),
-                                  );
-                                  return ListTile(
-                                    leading: Icon(
-                                      Icons.history,
-                                      color: _darkBrown,
-                                    ),
-                                    title: Text(
-                                      "Moisture: ${histMoisture.toStringAsFixed(0)}%",
-                                      style: TextStyle(
-                                        color: _darkBrown,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      "Temp: ${item["temperature"]}°C  |  Humidity: ${item["humidity"]}%",
-                                      style: TextStyle(color: _mediumBrown),
-                                    ),
-                                    trailing: Text(
-                                      DateFormat('kk:mm').format(
-                                        DateTime.parse(item["timestamp"]),
-                                      ),
-                                      style: TextStyle(color: _mediumBrown),
-                                    ),
-                                  );
-                                },
+                      icon:
+                          'assets/images/device.jpg', // Added placeholder icon
+                      child: jsonData == null
+                          ? Center(
+                              child: Text(
+                                "No history",
+                                style: TextStyle(color: _mediumBrown),
                               ),
-                      ),
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: jsonData["data"].length,
+                              itemBuilder: (context, index) {
+                                var item = jsonData["data"][index];
+                                double histMoisture = moistureToPercentage(
+                                  int.parse(item["moisture"].toString()),
+                                );
+                                return ListTile(
+                                  leading: Icon(
+                                    Icons.history,
+                                    color: _darkBrown,
+                                  ),
+                                  title: Text(
+                                    "Moisture: ${histMoisture.toStringAsFixed(0)}%",
+                                    style: TextStyle(
+                                      color: _darkBrown,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "Temp: ${item["temperature"]}°C  |  Humidity: ${item["humidity"]}%",
+                                    style: TextStyle(color: _mediumBrown),
+                                  ),
+                                  trailing: Text(
+                                    DateFormat(
+                                      'kk:mm',
+                                    ).format(DateTime.parse(item["timestamp"])),
+                                    style: TextStyle(color: _mediumBrown),
+                                  ),
+                                );
+                              },
+                            ),
                     ),
                   ],
                 ),
@@ -332,6 +359,7 @@ class _ViewDeviceState extends State<ViewDevice> {
     );
   }
 
+  // This widget is now only used for the Historical Data card
   Widget _buildGlassCard({
     required String title,
     String? icon,
@@ -385,13 +413,94 @@ class _ViewDeviceState extends State<ViewDevice> {
     );
   }
 
-  Widget _buildAnimatedLoader() {
-    return LottieBuilder.asset("assets/animation/3-step-plant.json");
+  // ADDED: New main health card widget
+  Widget _buildMainHealthCard(String message) {
+    return _buildGlassInfoCard(
+      child: Row(
+        children: [
+          // Lottie Animation
+          Expanded(
+            flex: 2,
+            child: Lottie.asset(
+              _getHealthAnimation(message),
+              key: ValueKey<String>(message), // Force animation restart
+            ),
+          ),
+          SizedBox(width: 16),
+          // Status and Advice Text
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Plant Health",
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  message, // "Dry", "Very Wet", etc.
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 22, // Larger font for status
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BebasNeue',
+                    letterSpacing: 1,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  _getHealthAdvice(message), // "Time to water!"
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: _mediumBrown, // A softer color
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  // --- Specific Card Content Widgets ---
+  // CHANGED: Updated loader to use the glass card for consistency
+  Widget _buildAnimatedLoader() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: _buildGlassInfoCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              LottieBuilder.asset(
+                "assets/animation/3-step-plant.json",
+                height: 200, // Give it a fixed height
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-  Widget _buildMoistureGauge(double value) {
+  // --- Specific Card Content Widgets (NOW WITH ADVICE) ---
+
+  // ADDED: New widget for Moisture Card
+  Widget _buildMoistureCard(double value) {
     // value is 0-100
     Color barColor;
     if (value < 30) {
@@ -402,155 +511,258 @@ class _ViewDeviceState extends State<ViewDevice> {
       barColor = _lightBlue;
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // CHANGED: Keep the bar at a fixed height and allow its width to
-        // animate according to available width. Avoid using Flexible here so
-        // the parent can remain shrink-wrapped in unbounded containers.
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final double maxW = constraints.maxWidth.isFinite
-                ? constraints.maxWidth
-                : MediaQuery.of(context).size.width;
-            final double barWidth = maxW * (value / 100);
-            return Container(
-              // Background of the bar
-              height: 20,
-              decoration: BoxDecoration(
-                color: const Color(0xFFDFE2EC),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                children: [
-                  // Animated bar
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeOutCubic,
-                    width: barWidth < 0 ? 0 : barWidth,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: barColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+    return _buildGlassInfoCard(
+      child: Row(
+        children: [
+          // Visualization
+          Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double maxW = constraints.maxWidth.isFinite
+                        ? constraints.maxWidth
+                        : 100; // Fallback
+                    final double barWidth = maxW * (value / 100);
+                    return Container(
+                      // Background of the bar
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDFE2EC),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Stack(
+                        children: [
+                          // Animated bar
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeOutCubic,
+                            width: barWidth < 0 ? 0 : barWidth,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: barColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "${value.toStringAsFixed(0)}%",
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BebasNeue',
                   ),
-                ],
-              ),
-            );
-          },
-        ),
-        SizedBox(height: 10),
-        Text(
-          "${value.toStringAsFixed(0)}%",
-          style: TextStyle(
-            color: _darkBrown,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'BebasNeue',
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHumidityGauge(double value) {
-    return AnimatedRadialGauge(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeOutCubic,
-      radius: 100,
-      value: value,
-      axis: GaugeAxis(
-        min: 0,
-        max: 100,
-        degrees: 180,
-        style: const GaugeAxisStyle(
-          thickness: 20,
-          background: Color(0xFFDFE2EC),
-          segmentSpacing: 4,
-        ),
-        pointer: GaugePointer.needle(
-          width: 20,
-          height: 30,
-          borderRadius: 16,
-          color: _darkBrown,
-        ),
-        progressBar: const GaugeProgressBar.rounded(color: Colors.transparent),
-        segments: [
-          GaugeSegment(
-            from: 0,
-            to: 33.3,
-            color: _lightBlue.withOpacity(0.5),
-            cornerRadius: Radius.circular(10),
-          ),
-          GaugeSegment(
-            from: 33.3,
-            to: 66.6,
-            color: _lightBlue,
-            cornerRadius: Radius.circular(10),
-          ),
-          GaugeSegment(
-            from: 66.6,
-            to: 100,
-            color: _lightBlue.withOpacity(0.5),
-            cornerRadius: Radius.circular(10),
+          SizedBox(width: 16),
+          // Status and Advice Text
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Moisture",
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  _getMoistureAdvice(value),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: _mediumBrown,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      // Displaying the value inside the gauge
-      child: Center(
-        child: Text(
-          "${value.toStringAsFixed(0)}%",
-          style: TextStyle(
-            color: _darkBrown,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'BebasNeue',
+    );
+  }
+
+  // ADDED: New widget for Humidity Card
+  Widget _buildHumidityCard(double value) {
+    return _buildGlassInfoCard(
+      child: Row(
+        children: [
+          // Visualization
+          Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedRadialGauge(
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOutCubic,
+                  radius: 60,
+                  value: value,
+                  axis: GaugeAxis(
+                    min: 0,
+                    max: 100,
+                    degrees: 180,
+                    style: const GaugeAxisStyle(
+                      thickness: 20,
+                      background: Color(0xFFDFE2EC),
+                      segmentSpacing: 4,
+                    ),
+                    pointer: GaugePointer.needle(
+                      width: 20,
+                      height: 30,
+                      borderRadius: 16,
+                      color: _darkBrown,
+                    ),
+                    progressBar: const GaugeProgressBar.rounded(
+                      color: Colors.transparent,
+                    ),
+                    segments: [
+                      GaugeSegment(
+                        from: 0,
+                        to: 33.3,
+                        color: _lightBlue.withOpacity(0.5),
+                        cornerRadius: Radius.circular(10),
+                      ),
+                      GaugeSegment(
+                        from: 33.3,
+                        to: 66.6,
+                        color: _lightBlue,
+                        cornerRadius: Radius.circular(10),
+                      ),
+                      GaugeSegment(
+                        from: 66.6,
+                        to: 100,
+                        color: _lightBlue.withOpacity(0.5),
+                        cornerRadius: Radius.circular(10),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "${value.toStringAsFixed(0)}%",
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'BebasNeue',
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          SizedBox(width: 16),
+          // Status and Advice Text
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Humidity",
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  _getHumidityAdvice(value),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: _mediumBrown,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildTemperatureDisplay(double value) {
-    return Center(
-      child: Text(
-        "${value.toStringAsFixed(1)}°C",
-        style: TextStyle(
-          color: _darkBrown,
-          fontSize: 48,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'BebasNeue',
-        ),
+  // ADDED: New widget for Temperature Card
+  Widget _buildTemperatureCard(double value) {
+    return _buildGlassInfoCard(
+      child: Row(
+        children: [
+          // Visualization
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Text(
+                "${value.toStringAsFixed(1)}°C",
+                style: TextStyle(
+                  color: _darkBrown,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BebasNeue',
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 16),
+          // Status and Advice Text
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Temperature",
+                  style: TextStyle(
+                    color: _darkBrown,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  _getTemperatureAdvice(value),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: _mediumBrown,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Ubuntu',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildHealthDisplay(String message) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // CHANGED: use a fixed-height box for the animation so it doesn't try
-        // to expand inside an unbounded parent.
-        SizedBox(
-          height: 80,
-          child: Lottie.asset(
-            _getHealthAnimation(message),
-            // Use a key to force the animation to restart on change
-            key: ValueKey<String>(message),
-          ),
-        ),
-        SizedBox(height: 10),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: _darkBrown,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'BebasNeue',
-          ),
-        ),
-      ],
-    );
-  }
+  // REMOVED: Old widget definitions, as they've been replaced by the new "Card" widgets
+  // Widget _buildMoistureGauge(double value) { ... }
+  // Widget _buildHumidityGauge(double value) { ... }
+  // Widget _buildTemperatureDisplay(double value) { ... }
 }
