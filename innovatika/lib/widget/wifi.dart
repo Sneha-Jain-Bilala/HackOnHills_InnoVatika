@@ -10,10 +10,9 @@ class CredentialService {
     required String password,
   }) async {
     try {
-      final uri = Uri.parse('$apiUrl').replace(queryParameters: {
-        'deviceId': deviceId,
-        'password': password,
-      });
+      final uri = Uri.parse(
+        apiUrl,
+      ).replace(queryParameters: {'deviceId': deviceId, 'password': password});
 
       final response = await http.get(uri);
 

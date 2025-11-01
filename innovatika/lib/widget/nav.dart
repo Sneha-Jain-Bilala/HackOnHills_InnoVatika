@@ -5,6 +5,7 @@ import 'package:innovatika/pages/gardens.dart';
 import 'package:innovatika/pages/homepage.dart';
 import 'package:innovatika/pages/plant_catalogue.dart';
 import 'package:innovatika/widget/appbar.dart';
+import 'package:innovatika/widget/const.dart';
 import 'package:lottie/lottie.dart';
 
 class NavBar extends StatefulWidget {
@@ -66,14 +67,20 @@ class _NavBarState extends State<NavBar> {
           FlashyTabBarItem(
             icon: const Icon(Iconsax.home),
             title: const Text('Home'),
+            activeColor: AppColors.darkGreen,
+            inactiveColor: AppColors.darkBrown,
           ),
           FlashyTabBarItem(
             icon: const Icon(Iconsax.location),
             title: const Text('Suggest Plants'),
+            activeColor: AppColors.darkGreen,
+            inactiveColor: AppColors.darkBrown,
           ),
           FlashyTabBarItem(
             icon: const Icon(Iconsax.box),
             title: const Text('Gardens'),
+            activeColor: AppColors.darkGreen,
+            inactiveColor: AppColors.darkBrown,
           ),
         ],
       ),
