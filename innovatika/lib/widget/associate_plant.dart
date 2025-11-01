@@ -4,7 +4,11 @@ import 'package:innovatika/widget/hardware_widget.dart';
 import 'package:innovatika/widget/nav.dart';
 import 'package:toastification/toastification.dart';
 
-Future<void> associatePlant(BuildContext context, List<dynamic> plants, List input) async {
+Future<void> associatePlant(
+  BuildContext context,
+  List<dynamic> plants,
+  List input,
+) async {
   // late bool isLoading = false;
   // final width = MediaQuery.of(context).size.width;
   // final height = MediaQuery.of(context).size.height;
@@ -82,20 +86,6 @@ Future<void> associatePlant(BuildContext context, List<dynamic> plants, List inp
                       subtitle: Text(
                         plantData.timeToGrow,
                         style: const TextStyle(fontSize: 16),
-                      ),
-                      trailing: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "${plantData.id} Plants",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ),
                     );
                   },

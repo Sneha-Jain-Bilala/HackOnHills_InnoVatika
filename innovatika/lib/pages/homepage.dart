@@ -112,7 +112,6 @@ class _HomepageState extends State<Homepage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     var devices = snapshot.data!.results;
-                    print(devices);
                     if (devices.isEmpty) {
                       return emptyLoading("No devices found");
                     }

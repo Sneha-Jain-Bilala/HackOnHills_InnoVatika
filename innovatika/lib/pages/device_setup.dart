@@ -110,11 +110,11 @@ class _DeviceSetupState extends State<DeviceSetup> {
           isLoading = false;
         });
       }
-  // Only navigate back to the root here for the case where we added a
-  // device directly (no plants). When associating with a plant, the
-  // associatePlant flow already navigates.
-  if (!context.mounted) return;
-  Navigator.popUntil(context, (route) => route.isFirst);
+      // Only navigate back to the root here for the case where we added a
+      // device directly (no plants). When associating with a plant, the
+      // associatePlant flow already navigates.
+      if (!context.mounted) return;
+      Navigator.popUntil(context, (route) => route.isFirst);
     }
     // }
 
@@ -259,7 +259,7 @@ class _DeviceSetupState extends State<DeviceSetup> {
                             },
                             style: ButtonStyle(
                               backgroundColor: WidgetStateProperty.all(
-                                const Color.fromARGB(255, 253, 234, 255),
+                                const Color.fromRGBO(165, 214, 167, 1),
                               ),
                             ),
                             icon: const Text("Save"),
