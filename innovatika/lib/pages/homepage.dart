@@ -10,6 +10,7 @@ import 'package:innovatika/widget/loading.dart';
 import 'package:innovatika/widget/nav.dart';
 import 'package:realm/realm.dart';
 import 'package:toastification/toastification.dart';
+import 'package:innovatika/widget/const.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -90,7 +91,7 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     // Set a background color or image for the glass effect to be visible
     return Scaffold(
-      backgroundColor: Colors.purple.shade50, // Example background
+      backgroundColor: AppColors.lightPastelGreen.withOpacity(0.12), // use app color
       body: !isRealmInitialized
           ? LoadingDeviceAnimation() // Show loading while realm initializes
           : StreamBuilder<RealmResultsChanges<HardwareInformerr>>(
@@ -310,25 +311,25 @@ class _HomepageState extends State<Homepage> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8.0),
-                                    child: Text(
-                                      device.name,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Color(0xff0f52ba),
-                                        fontSize: 20,
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.bold,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black12,
-                                            blurRadius: 2,
-                                            offset: Offset(1, 1),
-                                          )
-                                        ],
+                                      child: Text(
+                                        device.name,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: AppColors.darkBrown,
+                                          fontSize: 20,
+                                          fontFamily: "Poppins",
+                                          fontWeight: FontWeight.bold,
+                                          shadows: const [
+                                            Shadow(
+                                              color: Colors.black12,
+                                              blurRadius: 2,
+                                              offset: Offset(1, 1),
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                    ),
                                   ),
                                 ],
                               ),
