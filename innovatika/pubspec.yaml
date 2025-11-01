@@ -38,6 +38,7 @@ dependencies:
     git:
       url: https://github.com/sanjujr/arcore_flutter_plugin
   vector_math: ^2.2.0
+  iconsax_flutter: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
