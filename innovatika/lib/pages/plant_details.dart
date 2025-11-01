@@ -17,11 +17,7 @@ import 'package:toastification/toastification.dart';
 class PlantDetails extends StatefulWidget {
   final Plant plant;
   final String location;
-  const PlantDetails({
-    super.key,
-    required this.plant,
-    required this.location,
-  });
+  const PlantDetails({super.key, required this.plant, required this.location});
 
   @override
   State<PlantDetails> createState() => _PlantDetailsState();
@@ -40,9 +36,9 @@ class _PlantDetailsState extends State<PlantDetails> {
   Future fetchDescription() async {
     final stringJsonData = await GeminiClient(model: "gemini-1.5-flash-latest")
         .generateContentFromText(
-      prompt:
-          'Hi, I am trying to plant ${widget.plant.name} in my location ${widget.location}, first give me a brief description of the plant, some growing techniques and suggest me some caring techniques, give me the output strictly in json format and no other text, remove any kind of formatting and remove all newline characters. remember output strictly in json format and no other text. here is the format(key value): {"description": "All description goes here", "techniques":"All techniques goes here", "timeToGrow":"actual growing time in 10 letters"} in minimum 200 words,techniques must only contain the growing techniques and description should only contain a description, description and techniques should be strictly unique. both description and techniques keys should be present and strictly only json',
-    );
+          prompt:
+              'Hi, I am trying to plant ${widget.plant.name} in my location ${widget.location}, first give me a brief description of the plant, some growing techniques and suggest me some caring techniques, give me the output strictly in json format and no other text, remove any kind of formatting and remove all newline characters. remember output strictly in json format and no other text. here is the format(key value): {"description": "All description goes here", "techniques":"All techniques goes here", "timeToGrow":"actual growing time in 10 letters"} in minimum 200 words,techniques must only contain the growing techniques and description should only contain a description, description and techniques should be strictly unique. both description and techniques keys should be present and strictly only json',
+        );
 
     try {
       final Map<String, dynamic> jsonData = jsonDecode(stringJsonData);
@@ -71,10 +67,7 @@ class _PlantDetailsState extends State<PlantDetails> {
     }
   }
 
-  void addGardenFn(
-    BuildContext context,
-    int gardenID,
-  ) async {
+  void addGardenFn(BuildContext context, int gardenID) async {
     final url = await fetchGardenImage();
     GardenManager().addGarden(gardenID, url);
     var plantList = await PlantManager().listPlant();
@@ -83,10 +76,7 @@ class _PlantDetailsState extends State<PlantDetails> {
       plantLastID = plantList.last?.id + 1 ?? 0;
     }
     PlantManager().addPlant(widget.plant, plantLastID);
-    GardenManager().addAssociates(
-      gardenID,
-      plantLastID,
-    );
+    GardenManager().addAssociates(gardenID, plantLastID);
     if (!context.mounted) return;
     toastification.show(
       context: context,
@@ -94,10 +84,7 @@ class _PlantDetailsState extends State<PlantDetails> {
       style: ToastificationStyle.flat,
       alignment: Alignment.bottomCenter,
       autoCloseDuration: const Duration(seconds: 5),
-      title: Text(
-        "Garden Added Successfully",
-        textAlign: TextAlign.center,
-      ),
+      title: Text("Garden Added Successfully", textAlign: TextAlign.center),
     );
     Navigator.of(context).pop();
   }
@@ -109,10 +96,7 @@ class _PlantDetailsState extends State<PlantDetails> {
       plantLastID = plantList.last?.id + 1 ?? 0;
     }
     PlantManager().addPlant(widget.plant, plantLastID);
-    GardenManager().addAssociates(
-      gardenID,
-      plantLastID,
-    );
+    GardenManager().addAssociates(gardenID, plantLastID);
     if (!mounted) return;
     toastification.show(
       context: context,
@@ -120,21 +104,14 @@ class _PlantDetailsState extends State<PlantDetails> {
       style: ToastificationStyle.flat,
       alignment: Alignment.bottomCenter,
       autoCloseDuration: const Duration(seconds: 5),
-      title: Text(
-        "Plant Added Successfully",
-        textAlign: TextAlign.center,
-      ),
+      title: Text("Plant Added Successfully", textAlign: TextAlign.center),
     );
     Navigator.of(context).pop();
   }
 
   Future loadNetworkImg() async {
     try {
-      http.Response response = await http.get(
-        Uri.parse(
-          widget.plant.image,
-        ),
-      );
+      http.Response response = await http.get(Uri.parse(widget.plant.image));
       // final Uint8List img = await removeBG(response.bodyBytes);
       if (mounted) {
         setState(() {
@@ -173,104 +150,113 @@ class _PlantDetailsState extends State<PlantDetails> {
         context: context,
         isScrollControlled: false,
         builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.4),
+                        width: 1.5,
+                      ),
                     ),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: garden.length,
-                          itemBuilder: (context, index) {
-                            var garData = garden[index];
-                            return GestureDetector(
-                              onTap: () {
-                                addPlant(garData.id);
-                              },
-                              child: ListTile(
-                                tileColor: Colors
-                                    .transparent, // Use transparent tile color
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 20.0, horizontal: 20.0),
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    garData.imgURL,
-                                    width: 70,
-                                    height: 70,
-                                    fit: BoxFit.cover,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: garden.length,
+                            itemBuilder: (context, index) {
+                              var garData = garden[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  addPlant(garData.id);
+                                },
+                                child: ListTile(
+                                  tileColor: Colors
+                                      .transparent, // Use transparent tile color
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 20.0,
+                                    horizontal: 20.0,
                                   ),
-                                ),
-                                title: Text(
-                                  "Garden ${garData.id + 1}",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.darkBrown, // Apply color
+                                  leading: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                      garData.imgURL,
+                                      width: 70,
+                                      height: 70,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  garData.dateTime,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: AppColors.mediumBrown),
-                                ),
-                                trailing: Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightPastelGreen
-                                        .withOpacity(0.5), // Apply color
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    "${garData.plantAssoc.length} Plants",
+                                  title: Text(
+                                    "Garden ${garData.id + 1}",
                                     style: TextStyle(
-                                      color: AppColors.darkGreen, // Apply color
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
+                                      color: AppColors.darkBrown, // Apply color
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    garData.dateTime,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.mediumBrown,
+                                    ),
+                                  ),
+                                  trailing: Container(
+                                    padding: EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightPastelGreen
+                                          .withOpacity(0.5), // Apply color
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      "${garData.plantAssoc.length} Plants",
+                                      style: TextStyle(
+                                        color:
+                                            AppColors.darkGreen, // Apply color
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
+                              );
+                            },
+                          ),
+                        ),
+                        Divider(color: AppColors.mediumBrown.withOpacity(0.3)),
+                        TextButton.icon(
+                          onPressed: () {
+                            addGardenFn(context, gardenID + 1);
                           },
+                          icon: Icon(
+                            Iconsax.add,
+                            color: AppColors.darkGreen,
+                          ), // Apply color
+                          label: Text(
+                            "Add Garden",
+                            style: TextStyle(
+                              color: AppColors.darkGreen,
+                            ), // Apply color
+                          ),
                         ),
-                      ),
-                      Divider(color: AppColors.mediumBrown.withOpacity(0.3)),
-                      TextButton.icon(
-                        onPressed: () {
-                          addGardenFn(context, gardenID + 1);
-                        },
-                        icon: Icon(Iconsax.add,
-                            color: AppColors.darkGreen), // Apply color
-                        label: Text(
-                          "Add Garden",
-                          style: TextStyle(
-                              color: AppColors.darkGreen), // Apply color
-                        ),
-                      )
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          });
+              );
+            },
+          );
         },
       );
     }
@@ -292,10 +278,7 @@ class _PlantDetailsState extends State<PlantDetails> {
       child: Scaffold(
         backgroundColor: Colors.transparent, // Make scaffold transparent
         extendBodyBehindAppBar: true, // Extend body behind app bar
-        appBar: commonApp(
-          context: context,
-          title: widget.plant.name,
-        ),
+        appBar: commonApp(context: context, title: widget.plant.name),
         body: SafeArea(
           child: isShowpage
               ? ListView(
@@ -306,14 +289,12 @@ class _PlantDetailsState extends State<PlantDetails> {
                       child: SizedBox(
                         height: height / 2.5,
                         width: width,
-                        child: imageMem != null ? Image.asset("assets/images/on.png")
-                            // ? Image.memory(
-                            //     imageMem!,
-                            //     fit: BoxFit.contain,
-                            //   )
+                        child: imageMem != null
+                            ? Image.memory(imageMem!, fit: BoxFit.contain)
                             : Center(
                                 child: CircularProgressIndicator(
-                                    color: AppColors.darkGreen),
+                                  color: AppColors.darkGreen,
+                                ),
                               ), // Show loader if image is null
                       ),
                     ),
@@ -329,8 +310,9 @@ class _PlantDetailsState extends State<PlantDetails> {
                           padding: const EdgeInsets.all(20),
                           width: width,
                           decoration: BoxDecoration(
-                            color: Colors.white
-                                .withOpacity(0.3), // Glass effect color
+                            color: Colors.white.withOpacity(
+                              0.3,
+                            ), // Glass effect color
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(40),
                               topRight: Radius.circular(40),
@@ -375,8 +357,8 @@ class _PlantDetailsState extends State<PlantDetails> {
                                     alignment: Alignment.centerRight,
                                     child: TextButton.icon(
                                       onPressed: () async {
-                                        final garden =
-                                            await GardenManager().listGarden();
+                                        final garden = await GardenManager()
+                                            .listGarden();
 
                                         if (!context.mounted) return;
                                         if (garden.isEmpty) {
@@ -388,7 +370,10 @@ class _PlantDetailsState extends State<PlantDetails> {
                                               gardenList.last?.id ?? 0;
                                           if (!context.mounted) return;
                                           listGardens(
-                                              context, garden, gardenID);
+                                            context,
+                                            garden,
+                                            gardenID,
+                                          );
                                         }
                                       },
                                       style: ButtonStyle(
@@ -431,9 +416,7 @@ class _PlantDetailsState extends State<PlantDetails> {
                                   fontFamily: "Ubuntu",
                                 ),
                               ),
-                              const SizedBox(
-                                height: 20,
-                              ),
+                              const SizedBox(height: 20),
                               Text(
                                 "Growing Techniques",
                                 style: TextStyle(
@@ -451,12 +434,12 @@ class _PlantDetailsState extends State<PlantDetails> {
                                   color: AppColors.mediumBrown, // Apply color
                                   fontFamily: "Ubuntu",
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 )
               : animatedLoader(),
@@ -488,13 +471,9 @@ class _PlantDetailsState extends State<PlantDetails> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Lottie.asset("assets/animation/wait.json", height: 250),
-                  const SizedBox(
-                    height: 50,
-                  ),
+                  const SizedBox(height: 50),
                   Text(
                     "Communing with the Plant Spirits...",
                     textAlign: TextAlign.center,
@@ -512,9 +491,7 @@ class _PlantDetailsState extends State<PlantDetails> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

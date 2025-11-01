@@ -53,9 +53,7 @@ class _NavBarState extends State<NavBar> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: commonApp(context: context),
-      body: Center(
-        child: tabItems[_selectedIndex],
-      ),
+      body: Center(child: tabItems[_selectedIndex]),
       bottomNavigationBar: FlashyTabBar(
         selectedIndex: _selectedIndex,
         showElevation: true,

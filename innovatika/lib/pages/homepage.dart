@@ -22,7 +22,7 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   late Realm realm;
   late StreamSubscription<RealmResultsChanges<HardwareInformerr>>
-      _devicesSubscription;
+  _devicesSubscription;
 
   // Added a default initialization for realm to avoid late initialization errors
   // before _initializeRealm completes. This is a common pattern.
@@ -37,8 +37,9 @@ class _HomepageState extends State<Homepage> {
 
   Future<void> _initializeRealm() async {
     try {
-      final openedRealm =
-          await Realm.open(Configuration.local([HardwareInformerr.schema]));
+      final openedRealm = await Realm.open(
+        Configuration.local([HardwareInformerr.schema]),
+      );
       if (mounted) {
         setState(() {
           realm = openedRealm;
@@ -61,10 +62,7 @@ class _HomepageState extends State<Homepage> {
           style: ToastificationStyle.flat,
           alignment: Alignment.bottomCenter,
           autoCloseDuration: const Duration(seconds: 5),
-          title: Text(
-            "Error loading database",
-            textAlign: TextAlign.center,
-          ),
+          title: Text("Error loading database", textAlign: TextAlign.center),
         );
       }
     }
@@ -91,7 +89,9 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     // Set a background color or image for the glass effect to be visible
     return Scaffold(
-      backgroundColor: AppColors.lightPastelGreen.withOpacity(0.12), // use app color
+      backgroundColor: AppColors.lightPastelGreen.withOpacity(
+        0.12,
+      ), // use app color
       body: !isRealmInitialized
           ? LoadingDeviceAnimation() // Show loading while realm initializes
           : StreamBuilder<RealmResultsChanges<HardwareInformerr>>(
@@ -107,11 +107,11 @@ class _HomepageState extends State<Homepage> {
                     itemCount: devices.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 20, // Increased spacing
-                      mainAxisSpacing: 20, // Increased spacing
-                      childAspectRatio: 1,
-                    ),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 20, // Increased spacing
+                          mainAxisSpacing: 20, // Increased spacing
+                          childAspectRatio: 1,
+                        ),
                     itemBuilder: (context, index) {
                       final device = devices[index];
                       return GestureDetector(
@@ -119,7 +119,8 @@ class _HomepageState extends State<Homepage> {
                           if (device.plantAssociated == -1) {
                             // Open a Realm instance
                             var config = await Realm.open(
-                                Configuration.local(([PlantInformer.schema])));
+                              Configuration.local(([PlantInformer.schema])),
+                            );
 
                             // Fetch all plant from MongoDB Realm
                             var plantt = config.all<PlantInformer>().toList();
@@ -142,9 +143,7 @@ class _HomepageState extends State<Homepage> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => NavBar(
-                                    index: 1,
-                                  ),
+                                  builder: (context) => NavBar(index: 1),
                                 ),
                               );
                             } else {
@@ -152,14 +151,10 @@ class _HomepageState extends State<Homepage> {
                               Hardware hardware = await HardwareManager()
                                   .accessHardware(device.id);
                               if (!context.mounted) return;
-                              associatePlant(
-                                context,
-                                plantt,
-                                [
-                                  hardware.name,
-                                  hardware.passwd,
-                                ],
-                              );
+                              associatePlant(context, plantt, [
+                                hardware.name,
+                                hardware.passwd,
+                              ]);
                             }
                           } else {
                             Hardware hardware = await HardwareManager()
@@ -169,173 +164,211 @@ class _HomepageState extends State<Homepage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ViewDevice(
-                                  hardware: hardware,
-                                ),
+                                builder: (context) =>
+                                    ViewDevice(hardware: hardware),
                               ),
                             );
                           }
                         },
                         child:
                             // --- Glassmorphism UI Starts Here ---
-                            ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(
+                            Container(
                               decoration: BoxDecoration(
-                                // Semi-transparent white for the glass effect
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(20),
-                                // Border to catch the light
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.3),
-                                  width: 1,
+                                gradient: LinearGradient(
+                                  // New pastel colors related to gardening
+                                  colors: [
+                                    Color(0xFFE8F5E9), // Pastel Green
+                                    Color(0xFFFFFDE7), // Pastel Yellow/Cream
+                                    Color(0xFFE3F2FD), // Pastel Blue
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                                // Softer shadow for a "glowing" edge
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Image with a slight border/shadow
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              blurRadius: 5,
-                                              offset: const Offset(0, 2),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 10,
+                                    sigmaY: 10,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      // Semi-transparent white for the glass effect
+                                      color: Colors.white.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                      // Border to catch the light
+                                      border: Border.all(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        width: 1,
+                                      ),
+                                      // Softer shadow for a "glowing" edge
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                          blurRadius: 10,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Image with a slight border/shadow
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.1),
+                                                    blurRadius: 5,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                child: Image.asset(
+                                                  'assets/images/device.jpg',
+                                                  fit: BoxFit.contain,
+                                                  height: 70,
+                                                  width: 70,
+                                                ),
+                                              ),
+                                            ),
+                                            // Delete Icon
+                                            GestureDetector(
+                                              onTap: () async {
+                                                // Added a confirmation dialog
+                                                bool?
+                                                confirmDelete = await showDialog(
+                                                  context: context,
+                                                  builder: (context) => AlertDialog(
+                                                    title: Text(
+                                                      "Delete Device?",
+                                                    ),
+                                                    content: Text(
+                                                      "Are you sure you want to delete '${device.name}'?",
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                              context,
+                                                              false,
+                                                            ),
+                                                        child: Text("Cancel"),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                              context,
+                                                              true,
+                                                            ),
+                                                        child: Text(
+                                                          "Delete",
+                                                          style: TextStyle(
+                                                            color: Colors.red,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+
+                                                if (confirmDelete == true) {
+                                                  await HardwareManager()
+                                                      .removeHardware(
+                                                        device.id,
+                                                      );
+                                                  if (context.mounted) {
+                                                    toastification.show(
+                                                      context: context,
+                                                      type: ToastificationType
+                                                          .success,
+                                                      style: ToastificationStyle
+                                                          .flat,
+                                                      alignment: Alignment
+                                                          .bottomCenter,
+                                                      autoCloseDuration:
+                                                          const Duration(
+                                                            seconds: 3,
+                                                          ),
+                                                      title: Text(
+                                                        "'${device.name}' deleted",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.all(
+                                                  4,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.3),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.delete_outline,
+                                                  size: 28,
+                                                  color: Colors.red.shade700,
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          child: Image.asset(
-                                            'assets/images/device.jpg',
-                                            fit: BoxFit.contain,
-                                            height: 70,
-                                            width: 70,
+                                        const SizedBox(height: 20),
+                                        // Device Name
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0,
                                           ),
-                                        ),
-                                      ),
-                                      // Delete Icon
-                                      GestureDetector(
-                                        onTap: () async {
-                                          // Added a confirmation dialog
-                                          bool? confirmDelete =
-                                              await showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                              title: Text("Delete Device?"),
-                                              content: Text(
-                                                  "Are you sure you want to delete '${device.name}'?"),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                          context, false),
-                                                  child: Text("Cancel"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                          context, true),
-                                                  child: Text(
-                                                    "Delete",
-                                                    style: TextStyle(
-                                                        color: Colors.red),
-                                                  ),
+                                          child: Text(
+                                            device.name,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: AppColors.darkBrown,
+                                              fontSize: 20,
+                                              fontFamily: "Poppins",
+                                              fontWeight: FontWeight.bold,
+                                              shadows: const [
+                                                Shadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 2,
+                                                  offset: Offset(1, 1),
                                                 ),
                                               ],
                                             ),
-                                          );
-
-                                          if (confirmDelete == true) {
-                                            await HardwareManager()
-                                                .removeHardware(device.id);
-                                            if (context.mounted) {
-                                              toastification.show(
-                                                context: context,
-                                                type:
-                                                    ToastificationType.success,
-                                                style: ToastificationStyle.flat,
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                autoCloseDuration:
-                                                    const Duration(seconds: 3),
-                                                title: Text(
-                                                  "'${device.name}' deleted",
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              );
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.white.withOpacity(0.3),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.delete_outline,
-                                            size: 28,
-                                            color: Colors.red.shade700,
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Device Name
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0),
-                                      child: Text(
-                                        device.name,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: AppColors.darkBrown,
-                                          fontSize: 20,
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.bold,
-                                          shadows: const [
-                                            Shadow(
-                                              color: Colors.black12,
-                                              blurRadius: 2,
-                                              offset: Offset(1, 1),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
                         // --- Glassmorphism UI Ends Here ---
                       );
                     },

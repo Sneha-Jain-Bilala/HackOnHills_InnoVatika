@@ -15,9 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:toastification/toastification.dart';
 
 class PlantCategorization extends StatefulWidget {
-  const PlantCategorization({
-    super.key,
-  });
+  const PlantCategorization({super.key});
 
   @override
   State<PlantCategorization> createState() => _PlantCategorizationState();
@@ -111,8 +109,10 @@ class _PlantCategorizationState extends State<PlantCategorization> {
 
     if (permission == LocationPermission.deniedForever) {
       if (!mounted) return Future.error("buildcontext error");
-      locationError(context,
-          "Location Permission is Denied, kindly turn it on from the settings");
+      locationError(
+        context,
+        "Location Permission is Denied, kindly turn it on from the settings",
+      );
       return Future.error(
         'Location permissions are permanently denied, we cannot request permissions.',
       );
@@ -132,12 +132,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
   }
 
   Future processGemReq(String category, String locationCity) async {
-    var geminiData = await GeminiClient(
-      model: "gemini-1.5-flash-latest",
-    ).generateContentFromText(
-      prompt:
-          "Give me 5 fruits that can be grown in $locationCity. For each $category, provide its name, a placeholder image, and the approximate time it takes to grow. Format the output as JSON with the following keys: name, image, time_to_grow.",
-    );
+    var geminiData = await GeminiClient(model: "gemini-1.5-flash-latest")
+        .generateContentFromText(
+          prompt:
+              "Give me 5 fruits that can be grown in $locationCity. For each $category, provide its name, a placeholder image, and the approximate time it takes to grow. Format the output as JSON with the following keys: name, image, time_to_grow.",
+        );
 
     if (category == "fruit") {
       setState(() {
@@ -264,82 +263,80 @@ class _PlantCategorizationState extends State<PlantCategorization> {
           child: displayLocationPermission
               ? locationAnimation()
               : isGeminiRequestInProgress
-                  ? geminiReqAnimation(width)
-                  : plantCatalogue(),
+              ? geminiReqAnimation(width)
+              : plantCatalogue(),
         ),
       ),
     );
   }
 
   Widget locationAnimation() => Center(
-        child: Container(
-          margin: const EdgeInsets.all(20), // Margin for the glass card
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3), // Slightly more opaque
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.4),
-                    width: 1.5,
+    child: Container(
+      margin: const EdgeInsets.all(20), // Margin for the glass card
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3), // Slightly more opaque
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.4),
+                width: 1.5,
+              ),
+            ),
+            child: ListView(
+              shrinkWrap: true, // Make ListView fit its content
+              children: [
+                Lottie.asset("assets/animation/location.json", height: 250),
+                const SizedBox(height: 30),
+                const Text(
+                  "Allow Location Access",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: AppColors.darkBrown, // Changed text color
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: ListView(
-                  shrinkWrap: true, // Make ListView fit its content
-                  children: [
-                    Lottie.asset("assets/animation/location.json", height: 250),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const Text(
-                      "Allow Location Access",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: AppColors.darkBrown, // Changed text color
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "We need location permission to show personalised plant recommendation based on your location.",
-                      style: TextStyle(
-                        color: AppColors.mediumBrown, // Changed text color
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        await openAppSettings();
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: AppColors.lightPastelGreen
-                            .withOpacity(0.5), // Pastel green
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        "Open Location Settings",
-                        style: TextStyle(
-                            color: AppColors.darkGreen,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  ],
+                const SizedBox(height: 10),
+                const Text(
+                  "We need location permission to show personalised plant recommendation based on your location.",
+                  style: TextStyle(
+                    color: AppColors.mediumBrown, // Changed text color
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: () async {
+                    await openAppSettings();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.lightPastelGreen.withOpacity(
+                      0.5,
+                    ), // Pastel green
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    "Open Location Settings",
+                    style: TextStyle(
+                      color: AppColors.darkGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget geminiReqAnimation(double width) {
     return Center(
@@ -362,11 +359,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  Lottie.asset("assets/animation/geminiReqAnimation.json",
-                      height: 300),
-                  const SizedBox(
-                    height: 30,
+                  Lottie.asset(
+                    "assets/animation/geminiReqAnimation.json",
+                    height: 300,
                   ),
+                  const SizedBox(height: 30),
                   const Text(
                     "Embrace Nature's Lore",
                     textAlign: TextAlign.center,
@@ -387,9 +384,7 @@ class _PlantCategorizationState extends State<PlantCategorization> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -426,8 +421,10 @@ class _PlantCategorizationState extends State<PlantCategorization> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white.withOpacity(0.3),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.4),
+                width: 1,
+              ),
             ),
             child: ClipOval(
               child: FractionallySizedBox(
@@ -452,10 +449,8 @@ class _PlantCategorizationState extends State<PlantCategorization> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlantDetails(
-              plant: plant,
-              location: locationCity,
-            ),
+            builder: (context) =>
+                PlantDetails(plant: plant, location: locationCity),
           ),
         );
       },
@@ -471,31 +466,37 @@ class _PlantCategorizationState extends State<PlantCategorization> {
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(15.0),
-                border:
-                    Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.4),
+                  width: 1,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Image.asset("assets/images/on.png"),
-                // child: Image.network(
-                //   plant.image,
-                //   fit: BoxFit.cover,
-                //   // Add loading and error builders for a better UX
-                //   loadingBuilder: (context, child, progress) {
-                //     return progress == null
-                //         ? child
-                //         : const Center(
-                //             child: CircularProgressIndicator(
-                //                 color: AppColors.darkGreen),
-                //           );
-                //   },
-                //   errorBuilder: (context, error, stackTrace) {
-                //     return const Center(
-                //       child: Icon(Icons.broken_image,
-                //           size: 50, color: AppColors.mediumBrown),
-                //     );
-                //   },
-                // ),
+
+                child: Image.network(
+                  plant.image,
+                  fit: BoxFit.cover,
+                  // Add loading and error builders for a better UX
+                  loadingBuilder: (context, child, progress) {
+                    return progress == null
+                        ? child
+                        : const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.darkGreen,
+                            ),
+                          );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 50,
+                        color: AppColors.mediumBrown,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -522,18 +523,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
           Row(
             children: [
               _buildGlassIcon("assets/images/flower.png"),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-                "Flowering Plants",
-                style: categoryTitleStyle,
-              )
+              const SizedBox(width: 20),
+              Text("Flowering Plants", style: categoryTitleStyle),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: 100,
             height: 110, // Adjusted height
@@ -561,18 +555,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
           Row(
             children: [
               _buildGlassIcon("assets/images/fruit.png"),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-                "Fruit-Bearing Plants",
-                style: categoryTitleStyle,
-              )
+              const SizedBox(width: 20),
+              Text("Fruit-Bearing Plants", style: categoryTitleStyle),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: 100,
             height: 110,
@@ -600,18 +587,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
           Row(
             children: [
               _buildGlassIcon("assets/images/vegetables.png"),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-                "Vegetables",
-                style: categoryTitleStyle,
-              )
+              const SizedBox(width: 20),
+              Text("Vegetables", style: categoryTitleStyle),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: 100,
             height: 110,
@@ -639,18 +619,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
           Row(
             children: [
               _buildGlassIcon("assets/images/herbs.png"),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-                "Herbs",
-                style: categoryTitleStyle,
-              )
+              const SizedBox(width: 20),
+              Text("Herbs", style: categoryTitleStyle),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: 100,
             height: 110,
@@ -678,18 +651,11 @@ class _PlantCategorizationState extends State<PlantCategorization> {
           Row(
             children: [
               _buildGlassIcon("assets/images/shrubs.png"),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-                "Shrubs",
-                style: categoryTitleStyle,
-              )
+              const SizedBox(width: 20),
+              Text("Shrubs", style: categoryTitleStyle),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: 100,
             height: 110,
