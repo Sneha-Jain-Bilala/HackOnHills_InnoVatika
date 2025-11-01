@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Innovatika',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // Use the app's color constants as the seed for the color scheme
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.darkGreen),
