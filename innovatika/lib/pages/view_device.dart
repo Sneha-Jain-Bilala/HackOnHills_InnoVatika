@@ -359,7 +359,7 @@ class _ViewDeviceState extends State<ViewDevice> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (icon != null) Image.asset(icon, width: 24, height: 24),
+                  if (icon != null) Image.asset(icon, width: 50, height: 50),
                   if (icon != null) SizedBox(width: 8),
                   Text(
                     title.toUpperCase(),
@@ -386,32 +386,7 @@ class _ViewDeviceState extends State<ViewDevice> {
   }
 
   Widget _buildAnimatedLoader() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: _buildGlassInfoCard(
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // Fit content
-            children: [
-              Lottie.asset(
-                "assets/animation/loader.json",
-                height: 200,
-              ), // Assuming a general loader
-              SizedBox(height: 20),
-              Text(
-                "Fetching Sensor Data...",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: _darkBrown, // Apply color
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return LottieBuilder.asset("assets/animation/3-step-plant.json");
   }
 
   // --- Specific Card Content Widgets ---
@@ -557,7 +532,7 @@ class _ViewDeviceState extends State<ViewDevice> {
         // CHANGED: use a fixed-height box for the animation so it doesn't try
         // to expand inside an unbounded parent.
         SizedBox(
-          height: 140,
+          height: 80,
           child: Lottie.asset(
             _getHealthAnimation(message),
             // Use a key to force the animation to restart on change
