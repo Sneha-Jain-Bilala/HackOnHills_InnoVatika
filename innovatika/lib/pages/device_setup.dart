@@ -60,10 +60,7 @@ class _DeviceSetupState extends State<DeviceSetup> {
             style: ToastificationStyle.flat,
             alignment: Alignment.bottomCenter,
             autoCloseDuration: const Duration(seconds: 5),
-            title: Text(
-              errorN,
-              textAlign: TextAlign.center,
-            ),
+            title: Text(errorN, textAlign: TextAlign.center),
           );
           setState(() {
             isLoading = false;
@@ -84,7 +81,7 @@ class _DeviceSetupState extends State<DeviceSetup> {
             id: deviceLastID,
             devName: devID.text,
           );
-          HardwareManager().addHardware(hardware);
+          await HardwareManager().addHardware(hardware);
           if (!context.mounted) return;
           toastification.show(
             context: context,
@@ -99,22 +96,25 @@ class _DeviceSetupState extends State<DeviceSetup> {
           );
         } else {
           if (!context.mounted) return;
-          associatePlant(
-            context,
-            listPlants,
-            [
-              devName.text,
-              devID.text,
-              password.text,
-            ],
-          );
+          // Wait for the associatePlant bottom sheet to complete before continuing.
+          await associatePlant(context, listPlants, [
+            devName.text,
+            devID.text,
+            password.text,
+          ]);
+          // associatePlant handles navigation after a selection is made, so
+          // we can return early to avoid popping the route again below.
+          return;
         }
         setState(() {
           isLoading = false;
         });
       }
-      if (!context.mounted) return;
-      Navigator.popUntil(context, (route) => route.isFirst);
+  // Only navigate back to the root here for the case where we added a
+  // device directly (no plants). When associating with a plant, the
+  // associatePlant flow already navigates.
+  if (!context.mounted) return;
+  Navigator.popUntil(context, (route) => route.isFirst);
     }
     // }
 
@@ -136,11 +136,7 @@ class _DeviceSetupState extends State<DeviceSetup> {
           devName = part.split(',')[1];
         }
       }
-      return {
-        'password': password,
-        'devID': devID,
-        'devName': devName,
-      };
+      return {'password': password, 'devID': devID, 'devName': devName};
     }
 
     return Scaffold(
@@ -162,8 +158,9 @@ class _DeviceSetupState extends State<DeviceSetup> {
                         controller: controller,
                         onDetect: (barcodes) {
                           if (barcodes.raw != null) {
-                            Map<String, String> barDet =
-                                extractbarDet(barcodes.raw.toString());
+                            Map<String, String> barDet = extractbarDet(
+                              barcodes.raw.toString(),
+                            );
                             password.text = barDet['password'] ?? '';
                             devID.text = barDet['devID'] ?? '';
                             devName.text = barDet['devName'] ?? '';
@@ -174,9 +171,7 @@ class _DeviceSetupState extends State<DeviceSetup> {
                       ),
                     ),
                     // Bottom half: Divider and manual input section
-                    const SizedBox(
-                      height: 50,
-                    ),
+                    const SizedBox(height: 50),
                     Form(
                       key: formKey,
                       child: Column(
@@ -184,24 +179,27 @@ class _DeviceSetupState extends State<DeviceSetup> {
                         children: [
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 20.0),
-                            child: Divider(
-                              thickness: 2.0,
-                            ),
+                            child: Divider(thickness: 2.0),
                           ),
                           const Text(
                             "OR",
                             style: TextStyle(
-                                fontSize: 18.0, fontWeight: FontWeight.w500),
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const Text(
                             'Enter Manually',
                             style: TextStyle(
-                                fontSize: 18.0, fontWeight: FontWeight.w500),
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 20.0),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                            ),
                             child: TextFormField(
                               controller: devID,
                               validator: (value) {
@@ -216,12 +214,11 @@ class _DeviceSetupState extends State<DeviceSetup> {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          const SizedBox(height: 20),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                            ),
                             child: TextFormField(
                               controller: password,
                               validator: (value) {
@@ -236,12 +233,11 @@ class _DeviceSetupState extends State<DeviceSetup> {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          const SizedBox(height: 20),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                            ),
                             child: TextFormField(
                               controller: devName,
                               validator: (value) {
@@ -256,9 +252,7 @@ class _DeviceSetupState extends State<DeviceSetup> {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          const SizedBox(height: 20),
                           TextButton.icon(
                             onPressed: () {
                               handleSubmit();
@@ -270,26 +264,20 @@ class _DeviceSetupState extends State<DeviceSetup> {
                             ),
                             icon: const Text("Save"),
                             label: const Icon(Iconsax.document_upload),
-                          )
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 100,
-                    ),
+                    const SizedBox(height: 100),
                   ],
                 ),
               ],
             )
           : const Column(
               children: [
-                SizedBox(
-                  height: 50,
-                ),
+                SizedBox(height: 50),
                 LoadingDeviceAnimation(),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
               ],
             ),
     );
