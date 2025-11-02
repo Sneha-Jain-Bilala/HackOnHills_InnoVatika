@@ -425,3 +425,4 @@ void sendDataToGoogleScript(int moistureValue, float temperature, float humidity
     Serial.println("Wi-Fi not connected");
   }
 }
+
